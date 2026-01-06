@@ -1,0 +1,20 @@
+services:
+  n8n:
+    image: naskio/n8n-python:latest-debian
+    container_name: n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
+      - N8N_BLOCK_NODES_DISABLE_DEFAULT=true
+      - NODES_EXCLUDE=[]
+      - N8N_HOST=100.121.5.36
+      - N8N_PORT=5678
+      - WEBHOOK_URL=REDACTED
+      - GENERIC_TIMEZONE=Europe/Paris
+    volumes:
+      - /home/pi/n8n-docker/n8n_data:/home/node/.n8n
+      - /home/pi:/home/node/pi_home
+    user: root
