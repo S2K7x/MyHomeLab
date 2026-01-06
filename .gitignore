@@ -6,7 +6,7 @@ Icon
 .Spotlight-V100
 .Trashes
 
-# --- Fichiers Sensibles (Sécurité !) ---
+# --- Fichiers Sensibles ---
 .env
 *.pem
 *.key
@@ -20,8 +20,7 @@ auth.json
 *.temp
 .cache/
 
-# --- Outils de Home Lab (Optionnel) ---
-# Si tu utilises Terraform ou Docker plus tard
+# --- Outils de Home Lab ---
 .terraform/
 *.tfstate
 *.tfstate.backup
