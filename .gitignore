@@ -1,0 +1,27 @@
+# --- Système Mac ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+
+# --- Fichiers Sensibles (Sécurité !) ---
+.env
+*.pem
+*.key
+*.p12
+secrets.yml
+auth.json
+
+# --- Temporaires et Logs ---
+*.log
+*.tmp
+*.temp
+.cache/
+
+# --- Outils de Home Lab (Optionnel) ---
+# Si tu utilises Terraform ou Docker plus tard
+.terraform/
+*.tfstate
+*.tfstate.backup
