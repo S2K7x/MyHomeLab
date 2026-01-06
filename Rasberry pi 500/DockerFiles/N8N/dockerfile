@@ -1,0 +1,48 @@
+FROM docker.n8n.io/n8nio/n8n:latest
+
+USER root
+
+# 1. Installation des dépendances via apk (Alpine)
+# On utilise les paquets py3- pour aller plus vite sur RPi
+RUN apk add --update --no-cache \
+    python3 \
+    py3-pip \
+    python3-dev \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    jpeg-dev \
+    zlib-dev \
+    gcc \
+    musl-dev \
+    bash \
+    curl \
+    jq
+
+# 2. Installation des librairies Python
+# On force l'utilisation de pip dans l'environnement global du conteneur
+RUN pip3 install --no-cache-dir --break-system-packages \
+    aiohttp \
+    aiosqlite \
+    beautifulsoup4 \
+    cloudflared \
+    discord.py \
+    dnspython \
+    feedparser \
+    google-api-python-client \
+    google-generativeai \
+    google-genai \
+    httpx \
+    orjson \
+    pillow \
+    pydantic \
+    python-dotenv \
+    PyYAML \
+    qrcode \
+    requests \
+    rich \
+    schedule \
+    websockets \
+    whois
+
+USER node
