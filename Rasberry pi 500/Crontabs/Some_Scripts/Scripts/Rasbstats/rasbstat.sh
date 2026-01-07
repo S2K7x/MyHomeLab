@@ -10,7 +10,7 @@ if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
 else
     echo "[ERROR] $(date +"%Y-%m-%d %H:%M:%S") Config file $CONFIG_FILE not found. Using defaults." | tee -a "$LOG_FILE"
-    WEBHOOK_URL="https://discord.com/api/webhooks/1392866350933741578/H7p_fLHbHeuuWcmBOHgUWJzamRwYv9b2k1WveWiHVrJ_5Gqbm9wbi5WTRotfHZ168KhT"
+    WEBHOOK_URL=""
     CPU_TEMP_WARN=65
     CPU_TEMP_CRITICAL=75
     DISK_USAGE_CRITICAL=90
