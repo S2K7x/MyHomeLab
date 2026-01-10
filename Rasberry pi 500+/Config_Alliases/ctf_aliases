@@ -1,0 +1,88 @@
+# ~/.ctf_aliases
+
+# ============================================
+# ALIASES CTF/PENTEST/BUG BOUNTY
+# ============================================
+
+# Navigation rapide
+alias tools='cd ~/tools'
+alias wordlists='cd ~/wordlists'
+alias windows-tools='cd ~/tools/windows'
+alias peass-ng='cd ~/tools/peass-ng'
+alias ligolo-ng='cd ~/tools/ligolo-ng'
+
+# Outils de reconnaissance
+alias subf='subfinder'
+alias httpx='httpx'
+alias wayback='waybackurls'
+alias assetf='assetfinder'
+
+# Outils web
+alias dirsearch='python3 ~/tools/dirsearch/dirsearch.py'
+alias sqlmap='python3 ~/tools/sqlmap-dev/sqlmap.py'
+alias ffuf='ffuf'
+alias nuclei='nuclei'
+
+# Scanning réseau
+alias nmap='nmap'
+alias masscan='masscan'
+alias naabu='naabu'
+
+# Bruteforce
+alias hydra='hydra'
+
+# Reverse Engineering
+alias gdb='gdb'
+
+# Metasploit
+alias msf='msfconsole'
+alias msfvenom='msfvenom'
+
+# PEASS-ng
+alias linpeas='bash ~/tools/peass-ng/linpeas.sh'
+alias linpeas64='~/tools/peass-ng/linpeas_linux_arm64'
+alias winpeas='echo "WinPEAS disponible dans ~/tools/windows/"'
+
+# Ligolo-ng
+alias ligolo-agent='~/tools/ligolo-ng/ligolo-ng_agent'
+alias ligolo-proxy='~/tools/ligolo-ng/ligolo-ng_proxy'
+
+# Mimikatz
+alias mimikatz='echo "Mimikatz dans ~/tools/windows/mimikatz/"'
+
+# theHarvester
+alias theharvester='cd ~/tools/theHarvester && source venv/bin/activate && python3 theHarvester.py'
+
+# recon-ng
+alias recon-ng='cd ~/tools/recon-ng && python3 recon-ng'
+
+# Commandes utiles combinées
+alias scan-ports='nmap -sV -sC -p-'
+alias quick-scan='nmap -sV -sC'
+alias dir-fuzz='python3 ~/tools/dirsearch/dirsearch.py -u'
+alias subdomain-enum='subfinder -d'
+
+# Vérification rapide des outils
+alias check-tools='echo "=== Outils installés ===" && \
+                   echo "subfinder: $(which subfinder 2>/dev/null || echo "Non installé")" && \
+                   echo "nmap: $(which nmap 2>/dev/null || echo "Non installé")" && \
+                   echo "ffuf: $(which ffuf 2>/dev/null || echo "Non installé")" && \
+                   echo "hydra: $(which hydra 2>/dev/null || echo "Non installé")" && \
+                   echo "linpeas: $(ls ~/tools/peass-ng/linpeas.sh 2>/dev/null && echo "OK" || echo "Non installé")"'
+
+# Mise à jour des outils Go
+alias update-go-tools='echo "Mise à jour des outils Go..." && \
+                       go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest && \
+                       go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest && \
+                       go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest && \
+                       go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && \
+                       go install github.com/ffuf/ffuf/v2@latest && \
+                       echo "Mise à jour terminée!"'
+
+# Aide
+alias ctf-help='echo "=== Aide CTF/Pentest ===" && \
+                echo "Navigation: tools, wordlists, windows-tools, peass-ng, ligolo-ng" && \
+                echo "Recon: subf, httpx, wayback, assetf, theharvester, recon-ng" && \
+                echo "Web: dirsearch, sqlmap, ffuf, nuclei" && \
+                echo "Scanning: scan-ports, quick-scan, dir-fuzz, subdomain-enum" && \
+                echo "Autres: linpeas, ligolo-agent, check-tools, update-go-tools"'
