@@ -1,0 +1,15 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      - SIGNUPS_ALLOWED=true
+      - DOMAIN=https://ubuntuserver.tailc65dd8.ts.net
+      # Configuration TLS pour que Vaultwarden serve directement en HTTPS
+      - ROCKET_TLS={certs="/certs/cert.crt",key="/certs/cert.key"}
+    volumes:
+      - ./vw-data:/data
+      - ./certs:/certs:ro
+    ports:
+      - 443:80

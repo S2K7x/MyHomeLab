@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_POSTGRESDB_USER}
+      POSTGRES_PASSWORD: ${DB_POSTGRESDB_PASSWORD}
+      POSTGRES_DB: ${DB_POSTGRESDB_DATABASE}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - n8n_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: n8n_redis
+    restart: unless-stopped
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - n8n_net
+
+  n8n-main:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n_main
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - n8n_net
+
+  n8n-worker:
+    image: docker.n8n.io/n8nio/n8n:latest
+    entrypoint: ["n8n", "worker"]
+    container_name: n8n_worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      N8N_WORKER: "true"
+    depends_on:
+      - n8n-main
+    networks:
+      - n8n_net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: n8n_cloudflared
+    restart: unless-stopped
+    command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - n8n_net
+
+networks:
+  n8n_net:
+    driver: bridge
