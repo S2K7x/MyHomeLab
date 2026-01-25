@@ -1,0 +1,11 @@
+# Goal: If you need to walk away from your desk instantly, this script locks the screen of any machine (Mac, Windows, or Linux with GNOME/KDE).
+
+ID 05ac:021e Apple Keyboard
+SET_LAYOUT fr
+DELAY 500
+# For Mac
+GUI CTRL q
+# For Linux/Windows
+GUI l
+# Optional: Close terminal if open
+ALT F4

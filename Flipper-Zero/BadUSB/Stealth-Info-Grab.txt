@@ -1,0 +1,16 @@
+# Goal: Quickly gather system info on your Mac (IP, Serial Number, OS version) and save it to a file on the desktop. Useful for documentation.
+
+ID 05ac:021e Apple Keyboard
+SET_LAYOUT fr
+DELAY 1000
+GUI SPACE
+DELAY 200
+STRING Terminal
+ENTER
+DELAY 1000
+STRING system_profiler SPSoftwareDataType SPHardwareDataType > ~/Desktop/mac_audit.txt
+ENTER
+STRING ifconfig en0 | grep inet >> ~/Desktop/mac_audit.txt
+ENTER
+STRING exit
+ENTER

@@ -1,0 +1,15 @@
+# Goal: Quickly check the status of your Raspberry Pi 5 without typing commands. It opens the terminal, runs a system check, and sends a ping to your MacBook to confirm connectivity.
+
+ID 05ac:021e Apple Keyboard
+SET_LAYOUT fr
+DELAY 1000
+GUI t
+DELAY 500
+STRING echo "--- HomeLab Pulse ---"
+ENTER
+STRING hostname -I; uname -a; uptime
+ENTER
+STRING ping -c 4 192.168.1.XX  # Replace with your MacBook IP
+ENTER
+STRING sudo systemctl status syncthing
+ENTER
