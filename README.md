@@ -54,11 +54,3 @@ Welcome to my Home Lab repository. This environment is a hybrid of **self-hosted
 1. **The Vault Sync**: All documentation from the **Pixel 9a** is synced via Syncthing to the **RPi 5**, then backed up to the **Beelink** storage.
 2. **Security Alerts**: **Wazuh Manager** monitors log events → Triggers **custom_n8n.py** → Sends formatted reports to **Discord**.
 3. **Mobile Isolation**: Using GrapheneOS profiles to separate "Owner" (Lab Admin) from "Maya Golan" (Sock Puppet).
-
----
-
-## 📝 Maintenance & Logs
-
-- **System Tools**: See `/Raspberry pi 500+/Config_Tools` for environment setup.
-- **CTF Ready**: Use `ctf_aliases` on the Pi 500+ for a streamlined terminal experience.
-- **Shopping List**: Planned upgrades for the Proxmox nodes and RF antennas.
