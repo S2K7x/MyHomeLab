@@ -1,57 +1,64 @@
 ![Wallpaper](Images/Wallpaper.jpeg)
 
-# 🏠 My Home Lab
+# 🏠 My Home Lab | Secure Infrastructure & Pentesting
 
-Welcome to my Home Lab repository! This is a comprehensive collection of configurations, security protocols, and documentation for my local server and mobile pentesting environment.
+Welcome to my Home Lab repository. This environment is a hybrid of **self-hosted production services**, **cybersecurity monitoring (SIEM)**, and **mobile/hardware hardening**.
 
-> [!IMPORTANT]
-> **Work in Progress**: This lab is constantly evolving. I’m frequently breaking, fixing, and optimizing things—especially regarding mobile hardening and OPSEC.
-
----
-
-## 🛠 Hardware & Setup
-
-Currently, my lab runs on the following hardware:
-
-### 🖥️ Servers & Compute
-- **Beelink**: Running **Proxmox** for virtualization and heavy lifting.
-- **Raspberry Pi 5**: Primary node for core services (Nextcloud, n8n, Syncthing).
-- **Raspberry Pi 500+**: Dedicated to custom shell tools and aliases.
-
-### 📱 Mobile & Pentesting
-- **Pixel 9a**: Running **GrapheneOS**. Hardened mobile device with multiple isolated profiles.
-- **Flipper Zero**: Running **Unleashed Firmware**. Used for Sub-GHz, NFC, and BadUSB automation.
+> [!WARNING]
+> **Experimental Environment**: This repository contains penetration testing tools (Flipper Zero, Metasploitable, Wazuh) and hardened mobile configurations. Use responsibly.
 
 ---
 
-## 📂 Repository Structure
+## 🛠 Hardware Architecture
 
-| Folder             | Description                                                                 |
-| ------------------ | --------------------------------------------------------------------------- |
-| `/Beelink`         | Proxmox configurations and VM setups.                                       |
-| `/Raspberry pi 5`  | Pi-hole, Nextcloud, n8n, and Syncthing automation.                          |
-| `/Pixel 9a`        | GrapheneOS hardening, system config, and **Sock Puppet** strategies.        |
-| `/Flipper-Zero`    | Unleashed firmware config, databases, and custom **BadUSB** payloads.       |
-| `/Shopping-List`   | Planned upgrades and hardware tracking.                                     |
-| `/Images`          | Resources, wallpapers, and diagrams.                                        |
-
----
-
-## 🚀 Key Services & Security
-
-### 🌐 Core Services
-- **Network**: Pi-hole (DNS Ad-blocking) & PIA VPN.
-- **Automation**: n8n, Syncthing (RPi 5 ↔ Pixel 9a sync), and Crontabs.
-- **Cloud**: Self-hosted Nextcloud instance.
-
-### 🔐 Security & OPSEC
-- **Mobile Hardening**: GrapheneOS with sandboxed Google Play and restricted Gboard.
-- **Identity Management**: **"Maya Golan"** persona documentation for isolated testing.
-- **Hardware Tools**: Flipper Zero for physical security audits and HID automation.
-- **Emergency Protocols**: Integrated **Burn Scripts** and checklists for data sanitization.
+| Device | Role | OS / Platform |
+| :--- | :--- | :--- |
+| **Beelink** | Virtualization & Security | Proxmox VE (Wazuh, Bitwarden, n8n) |
+| **Raspberry Pi 5** | Core Home Services | Raspberry Pi OS (Nextcloud, Pi-hole) |
+| **Pi 500+** | Dev & Tools | Raspberry Pi OS (CTF Aliases & Tools) |
+| **Pixel 9a** | Hardened Mobile | GrapheneOS (Maya Golan Persona) |
+| **Flipper Zero** | Hardware Pentesting | Unleashed Firmware |
 
 ---
 
-## 📝 Maintenance
+## 📂 Repository Roadmap
 
-Since this is a personal "playground," documentation might lag behind the actual configuration. 
+### 🛡️ Security & SIEM (`/Beelink`, `/Pixel 9a`)
+- **Wazuh**: Full SIEM setup with custom n8n integration, Discord alerts, and automated reporting.
+- **Metasploitable**: Dedicated VM for internal pentesting and CTF practice.
+- **Bitwarden**: Self-hosted password management for the entire lab.
+- **Sock Puppet**: Identity management protocol for the **Maya Golan** persona.
+
+### 🤖 Automation & Monitoring (`/Raspberry pi 5`)
+- **n8n**: Workflow automation (local on Pi 5 & cloud-ready on Beelink).
+- **Custom Scripts**: 
+  - `Cryptalyst.py`: Crypto-analysis/monitoring.
+  - `Rasbstats`: Real-time hardware telemetry.
+  - `Forge`, `Nexus`, `Miru`, `Joker`: Custom Python automation suite.
+- **Crontabs**: Scheduled maintenance and backup scripts.
+
+### 📡 Field Tools (`/Flipper-Zero`)
+- **BadUSB**: Automated payloads (RickRoll, Stealth Info Grab, Emergency Lock).
+- **Unleashed Config**: Frequency de-restriction and extended protocol dictionaries.
+
+### 🏠 Home Services (`/Raspberry pi 5`, `/Beelink`)
+- **Nextcloud**: Personal cloud storage linked to mobile profiles.
+- **Pi-hole**: Network-wide DNS sinkhole and ad-blocking.
+- **Stremio**: Self-hosted media streaming via Docker.
+- **MesSignets**: Local bookmark management system.
+
+---
+
+## 🚀 Key Workflows
+
+1. **The Vault Sync**: All documentation from the **Pixel 9a** is synced via Syncthing to the **RPi 5**, then backed up to the **Beelink** storage.
+2. **Security Alerts**: **Wazuh Manager** monitors log events → Triggers **custom_n8n.py** → Sends formatted reports to **Discord**.
+3. **Mobile Isolation**: Using GrapheneOS profiles to separate "Owner" (Lab Admin) from "Maya Golan" (Sock Puppet).
+
+---
+
+## 📝 Maintenance & Logs
+
+- **System Tools**: See `/Raspberry pi 500+/Config_Tools` for environment setup.
+- **CTF Ready**: Use `ctf_aliases` on the Pi 500+ for a streamlined terminal experience.
+- **Shopping List**: Planned upgrades for the Proxmox nodes and RF antennas.
