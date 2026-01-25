@@ -1,15 +1,18 @@
-# 🛡️ ALERTE WAZUH
-> {{ $json.body.rule.description || "Aucune description" }}
+# 🛡️ WAZUH ALERT
 
-**🔴 Niveau :** {{ $json.body.rule.level || "N/A" }}
-**🆔 ID Règle :** {{ $json.body.rule.id || "N/A" }}
-**🖥️ Agent :** `{{ $json.body.agent?.name || "N/A" }}`
-**👤 Utilisateur :** `{{ $json.body.data?.srcuser || "N/A" }}`
-**🌐 IP Source :** `{{ $json.body.data?.srcip || "N/A" }}`
+> {{ $json.body.rule.description || "No description available" }}
 
-**📖 Log complet :**
+**🔴 Level:** {{ $json.body.rule.level || "N/A" }}
+**🆔 Rule ID:** {{ $json.body.rule.id || "N/A" }}
+**🖥️ Agent:** `{{ $json.body.agent?.name || "N/A" }}`
+**👤 User:** `{{ $json.body.data?.srcuser || "N/A" }}`
+**🌐 Source IP:** `{{ $json.body.data?.srcip || "N/A" }}`
+
+**📖 Full Log:**
+
 ```
 {{ ($json.body.full_log || "").substring(0, 1000) }}
-```
-*🕒 {{ $json.body.timestamp || "" }}*
 
+```
+
+*🕒 {{ $json.body.timestamp || "" }}*
