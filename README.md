@@ -1,2 +1,2 @@
 # My Home Lab
-![Wallpaper](images/Wallpaper.jpeg)
+![Wallpaper](/images/Wallpaper.jpeg)
