@@ -1,3 +1,4 @@
+<img src="./Images/Wallpaper.jpeg" style="width:100%;" />
 # 🏠 My Home Lab
 
 Welcome to my Home Lab repository. This environment is a hybrid of **self-hosted services**, **SIEM monitoring**, and **mobile/hardware hardening**.
