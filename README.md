@@ -14,10 +14,10 @@ Welcome to my Home Lab repository. This environment is a high-performance hybrid
 | Device | Role | Platform | Specs Highlights |
 | --- | --- | --- | --- |
 | **🚀 PLAYER 7** | **Primary Command Center** | Win 11 / WSL2 | **Ultra 5 245K \| RTX 5070 \| 32GB DDR5** |
-| **💻 Beelink** | Virtualization & SIEM | Proxmox | Wazuh, Metasploitable Labs |
-| **🥧 RPi 5** | Core Services | Debian / Docker | Nextcloud, Pi-hole, n8n |
+| **💻 Beelink** | Virtualization & SIEM | Proxmox | Wazuh, Metasploitable, JuiceShop, Kali and more services |
+| **🥧 RPi 5** | Core Services | Debian / Docker | Nextcloud, Pi-hole, n8n, uptime-kuma |
 | **⌨️ RPi 500+** | Dev Environment | Linux Arm | Custom Aliases & CTF Tools |
-| **📱 Pixel 9a** | Hardened Mobile | GrapheneOS | Maya Golan Persona |
+| **📱 Pixel 9a** | Hardened Mobile | GrapheneOS | Ghost account and Maya Golan Persona |
 | **🐬 Flipper Zero** | RF & HID Tools | Unleashed FW | Sub-GHz & BadUSB Payloads |
 
 ---
