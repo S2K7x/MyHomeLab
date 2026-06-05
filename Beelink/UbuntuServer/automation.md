@@ -12,6 +12,7 @@ Defined in `crontab -e` for user `admini`:
 |---|---|---|---|
 | `0 * * * *` | `syscheck.sh` | `last_run_cron.log` | Hourly system health check + conditional Discord alerts |
 | `0 0 * * *` | `syscheck.sh --daily-report` | `last_daily_report.log` | Midnight daily summary report sent to Discord |
+| `0 2 * * *` | `backup_volumes.sh` | `last_backup.log` | Daily Docker volume backup (2am) |
 | `0 3 * * 0` | `docker_cleanup.sh` | `last_cleanup.log` | Weekly Docker cleanup (Sunday 3am) |
 | `0 20 * * *` | `update_bounty.sh` | `update_bounty.log` | Daily bug bounty update script |
 
@@ -37,13 +38,53 @@ Color codes:
 
 **Alert Triggers:**
 
-| Trigger | Threshold | Color | Description |
+| Trigger | Threshold | Color | Source |
 |---|---|---|---|
-| Disk usage high | > 85% | Red | Root filesystem approaching capacity |
-| RAM usage high | > 85% | Orange | Memory pressure detected |
-| Container crash | Any | Red | Docker container exited unexpectedly |
-| Daily report | Midnight | Blue | Scheduled summary of system health |
-| Docker cleanup done | Sunday 3am | Blue | Reports MB freed after weekly prune |
+| Disk usage high | > 85% | Red | `syscheck.sh` + Grafana |
+| RAM usage high | > 85% | Orange | `syscheck.sh` + Grafana |
+| CPU usage high | > 90% | Orange | Grafana alert rule |
+| Container crash | Any restarting | Red | `syscheck.sh` |
+| Fail2ban ban | Any IP banned | Red | `discord-notify.conf` |
+| Fail2ban unban | IP released | Green | `discord-notify.conf` |
+| Daily report | Midnight | Blue | `syscheck.sh --daily-report` |
+| Docker cleanup done | Sunday 3am | Blue | `docker_cleanup.sh` |
+| Watchtower update | Sunday 4am | Blue | Watchtower container |
+| Volume backup done | Daily 2am | Green/Red | `backup_volumes.sh` |
+
+---
+
+## Grafana Alerting (via Provisioning)
+
+Grafana is configured to send alerts to Discord using provisioned contact points.
+All configuration survives container recreates — stored in `/home/admini/.hermes/monitoring/grafana-provisioning/`.
+
+**Contact point:** `~/.hermes/monitoring/grafana-provisioning/alerting/homelab_alerts.yml`
+
+**Alert rules (3):**
+
+| Rule | Condition | For | Severity |
+|---|---|---|---|
+| High Disk Usage | Root filesystem available < 15% | 5 min | Warning |
+| High CPU Usage | CPU idle < 10% (>90% busy) | 5 min | Warning |
+| High Memory Usage | Available memory < 10% | 5 min | Warning |
+
+**Notification policy:** Group by `alertname`, wait 30s, repeat every 4h.
+
+---
+
+## Prometheus Alertmanager
+
+**Container:** `alertmanager-alertmanager-1`
+**Port:** `:9093`
+**Config:** `/home/admini/alertmanager/alertmanager.yml`
+
+Routes Prometheus-generated alerts to Discord. Provides:
+- Alert grouping (reduces noise)
+- Deduplication
+- Inhibition rules (critical silences warning for same alert)
+- Resolve notifications when alert clears
+
+Alertmanager is scraped by Prometheus as a target (`alertmanager` job).
 
 ---
 
@@ -67,19 +108,25 @@ Color codes:
 - Sends a comprehensive Discord embed with all metrics
 - Includes disk %, RAM %, container count, and system uptime
 
-**Output files:**
-- Full log: `~/.hermes/monitoring/logs/syscheck-<UTC-timestamp>.log`
-- Summary JSON: `~/.hermes/monitoring/last_summary.json`
-
 ---
 
 ## Daily Docker Volume Backup (`backup_volumes.sh`)
 
 **Script:** `~/.hermes/monitoring/backup_volumes.sh`
 **Schedule:** Daily at 2am — `0 2 * * *`
+**Retention:** 7 days
+**Destination:** `/home/admini/backups/`
 
 Backs up critical Docker volumes to prevent data loss from container updates or crashes.
-Wazuh, Vaultwarden, and other stateful service data is preserved.
+
+| Service | Method | Typical Size |
+|---|---|---|
+| Vaultwarden | `tar` of `/home/admini/bitwarden/vw-data` | ~474 KB |
+| Portainer | Named volume `portainer_data` | ~52 KB |
+| Prometheus | Named volume `prometheus_data` | ~6.7 MB |
+| Grafana | `docker cp grafana.db` + gzip | ~163 KB |
+
+Sends Discord notification with backup results (success/failure per item).
 
 ---
 
@@ -104,6 +151,7 @@ Wazuh, Vaultwarden, and other stateful service data is preserved.
 **Container:** `watchtower-watchtower-1`
 **Image:** `containrrr/watchtower:latest`
 **Schedule:** Sunday at 4am
+**Mode:** Auto-update (pulls + restarts)
 
 Monitors Docker Hub for new image versions of all running containers.
 When an update is detected:
@@ -114,34 +162,54 @@ When an update is detected:
 
 ---
 
+## Security Hardening Script
+
+**Script:** `/home/admini/apply-security-hardening.sh`
+**Requires:** `sudo`
+
+One-shot script that applies all security hardening steps:
+
+```bash
+sudo /home/admini/apply-security-hardening.sh
+```
+
+Steps applied:
+1. **Fail2ban** — SSH jail + Discord ban/unban action
+2. **SSH** — drop-in `/etc/ssh/sshd_config.d/99-homelab-hardening.conf`
+3. **Logrotate** — 14-day rotation for Hermes monitoring logs
+4. **UFW** — Docker-compatible firewall rules
+
+See [`security.md`](./security.md) for full details.
+
+---
+
 ## Hermes AI Skills
 
 Claude Code (Hermes) skills deployed for on-demand DevOps auditing.
-Invoked via Claude Code CLI: `claude "run devops/host-audit-full"`
+Skills are located under `~/.hermes/skills/devops/`.
 
 ### `devops/host-audit-full`
 **Full server audit + Discord report**
 
-Performs a comprehensive health check:
+Performs a comprehensive health check and sends a scored report (/100) to Discord:
 - System resources (CPU, RAM, disk, load)
 - All Docker containers status
 - Systemd service health
-- Network connectivity
-- Recent error logs
-- Sends formatted report to Discord
+- SSH brute-force attempts (24h)
+- Fail2ban and Tailscale status
+
+Script: `~/.hermes/skills/devops/host-audit-full/scripts/quick_audit.sh [--discord] [--json]`
 
 ### `devops/docker-audit`
 **Deep Docker health check**
 
 Inspects all containers in detail:
 - Container health status and restart counts
-- Image versions and update availability
-- Volume mounts and network configuration
 - Resource usage per container
 - Unhealthy containers with root cause hints
 
 ### `devops/security-posture-check`
-**Security configuration audit**
+**Security configuration audit + score /100 to Discord**
 
 Reviews:
 - Fail2ban status and recent bans
@@ -166,23 +234,30 @@ Investigates disk usage:
 
 | File | Path | Description |
 |---|---|---|
-| Prometheus config | `~/.hermes/monitoring/prometheus.yml` | Scrape targets and global settings |
-| Alert rules | `~/.hermes/monitoring/alert_rules.yml` | Prometheus alerting rules |
-| Monitoring compose | `~/.hermes/monitoring/docker-monitoring-compose.yml` | Prometheus + Grafana + cAdvisor + Node Exporter stack |
+| Prometheus config | `~/.hermes/monitoring/prometheus.yml` | Scrape targets, alertmanager endpoint, global settings |
+| Alert rules | `~/.hermes/monitoring/alert_rules.yml` | 8 Prometheus alerting rules |
+| Monitoring compose | `~/.hermes/monitoring/docker-monitoring-compose.yml` | Prometheus + Grafana + cAdvisor + Node Exporter |
+| Grafana dashboards | `~/.hermes/monitoring/grafana-dashboards/` | Exported JSON (Node Exporter Full, Docker Monitoring) |
+| Grafana datasources | `~/.hermes/monitoring/grafana-datasources/prometheus.yml` | Prometheus datasource provisioning |
+| Grafana alerting | `~/.hermes/monitoring/grafana-provisioning/alerting/` | Discord contact point + alert rules (provisioned) |
 
 ---
 
 ## Log Retention
 
-Syscheck logs accumulate in `~/.hermes/monitoring/logs/` and `~/.hermes/monitoring/` (flat `.log.gz` files from the Hermes skill runs). These are gzip-compressed after rotation.
+Syscheck logs accumulate in `~/.hermes/monitoring/logs/`.
+Logrotate (once applied via `apply-security-hardening.sh`) rotates all monitoring logs daily with 14-day retention.
 
 To view a recent log:
 ```bash
 # Last syscheck log
 cat ~/.hermes/monitoring/logs/$(ls -t ~/.hermes/monitoring/logs/ | head -1)
 
-# Last daily summary JSON
-cat ~/.hermes/monitoring/last_summary.json | python3 -m json.tool
+# Quick audit (text output)
+bash ~/.hermes/skills/devops/host-audit-full/scripts/quick_audit.sh
+
+# Quick audit to Discord
+bash ~/.hermes/skills/devops/host-audit-full/scripts/quick_audit.sh --discord
 ```
 
 ---

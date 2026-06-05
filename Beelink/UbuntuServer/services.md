@@ -1,6 +1,6 @@
 # Services — UbuntuServer
 
-Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.100.102.101`).
+Complete inventory of all 22 Docker containers running on `ubuntuserver` (`10.100.102.101`).
 
 > Compose files are located in their respective project directories under `/home/admini/`.
 > The monitoring stack uses `~/.hermes/monitoring/docker-monitoring-compose.yml`.
@@ -12,10 +12,11 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 | Name | Port(s) | Docker Image | Compose Stack | Description |
 |---|---|---|---|---|
 | `monitoring-prometheus-1` | `9090→9090` | `prom/prometheus:latest` | `monitoring` | Scrapes metrics from all exporters; evaluates alert rules; stores time-series data |
-| `monitoring-grafana-1` | `3001→3000` | `grafana/grafana:latest` | `monitoring` | Visualization dashboards — ships with Node Exporter Full and Docker dashboards |
+| `monitoring-grafana-1` | `3001→3000` | `grafana/grafana:latest` | `monitoring` | Visualization dashboards — ships with Node Exporter Full and Docker dashboards; Discord alerts provisioned |
 | `monitoring-cadvisor-1` | `8081→8080` | `gcr.io/cadvisor/cadvisor:latest` | `monitoring` | Exposes per-container CPU, memory, network, and I/O metrics to Prometheus |
 | `monitoring-node-exporter-1` | `9100` (host net) | `quay.io/prometheus/node-exporter:latest` | `monitoring` | Host-level OS metrics (CPU, mem, disk, net) for Prometheus |
-| `glances-glances-1` | `61208` | `nicolargo/glances:latest-full` | `glances` | Real-time system overview with web UI; monitors CPU, memory, disk, containers |
+| `alertmanager-alertmanager-1` | `9093→9093` | `prom/alertmanager:latest` | `alertmanager` | Routes Prometheus alerts to Discord; deduplication and grouping |
+| `glances-glances-1` | `61208` (host net) | `nicolargo/glances:latest-full` | `glances` | Real-time system overview with web UI; monitors CPU, memory, disk, containers |
 | `dozzle-dozzle-1` | `9999→8080` | `amir20/dozzle:latest` | `dozzle` | Streams live Docker logs from all containers via a clean web interface |
 | `speedtest-speedtest-tracker-1` | `8765→80` | `lscr.io/linuxserver/speedtest-tracker:latest` | `speedtest` | Runs scheduled internet speed tests and stores historical results |
 
@@ -35,7 +36,7 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 > Dashboard: `https://10.100.102.101:8443`
 
 **Host-level security services (not containers):**
-- **Fail2ban** — monitors auth logs; bans IPs on repeated failures (SSH, NPM, etc.)
+- **Fail2ban** — monitors auth logs; bans IPs on repeated failures (SSH jail: maxretry=3, bantime=2h); Discord ban/unban alerts
 - **Tailscale** — mesh VPN daemon; provides `100.123.91.70` for remote access
 
 ---
@@ -46,7 +47,8 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 |---|---|---|---|---|
 | `portainer` | `9443→9443`, `8000`, `9000` | `portainer/portainer-ce:latest` | standalone | Docker management UI — manage all stacks, containers, volumes, and networks |
 | `nginx-proxy-manager` | `80→80`, `81→81`, `443→443` | `jc21/nginx-proxy-manager:latest` | standalone | Reverse proxy with Let's Encrypt SSL — routes domains to backend services |
-| `dashy` | `8080→8080` | `lissy93/dashy:latest` | standalone | Homepage dashboard with links to all self-hosted services |
+| `homepage-homepage-1` | `3005→3000` | `ghcr.io/gethomepage/homepage:latest` | `homepage` | Auto-discovering dashboard with CPU/RAM/disk widgets and service health |
+| `dashy` | `8080→8080` | `lissy93/dashy:latest` | standalone | Legacy homepage dashboard with links to all self-hosted services |
 | `filebrowser-filebrowser-1` | `8585→80` | `filebrowser/filebrowser:latest` | `filebrowser` | Web-based file manager with user accounts; browse and manage server files |
 
 ---
@@ -58,7 +60,8 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 | `vaultwarden` | (via NPM proxy) | `vaultwarden/server:latest` | standalone | Self-hosted Bitwarden-compatible password manager; accessed via HTTPS through NPM |
 | `samba` | `139`, `445` (host net) | `dperson/samba:latest` | standalone | SMB file sharing — accessible as `\\10.100.102.101` on LAN |
 | `it-tools-it-tools-1` | `8888→80` | `corentinth/it-tools:latest` | `it-tools` | Collection of developer/sysadmin utility tools (hashing, encoding, networking, etc.) |
-| `watchtower-watchtower-1` | `8080` (internal) | `containrrr/watchtower:latest` | `watchtower` | Monitors Docker Hub for image updates; pulls and restarts updated containers automatically |
+| `ntfy-ntfy-1` | `7777→80` | `binwiederhier/ntfy:latest` | `ntfy` | Self-hosted push notification service; auth required; mobile app support |
+| `watchtower-watchtower-1` | — | `containrrr/watchtower:latest` | `watchtower` | Monitors Docker Hub for image updates; pulls and restarts updated containers automatically |
 | `local-app-1` | `3000→3000` | `local-app` | `local` | MyLittleQuest — custom local application (built from local Dockerfile) |
 
 ---
@@ -77,6 +80,8 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 | 1515 | Wazuh Agent Registration | TCP |
 | 3000 | MyLittleQuest | TCP |
 | 3001 | Grafana | TCP |
+| 3005 | Homepage | TCP |
+| 7777 | Ntfy (push notifications) | TCP |
 | 8080 | Dashy | TCP |
 | 8081 | cAdvisor | TCP |
 | 8443 | Wazuh Dashboard (HTTPS) | TCP |
@@ -84,6 +89,7 @@ Complete inventory of all 19 Docker containers running on `ubuntuserver` (`10.10
 | 8765 | Speedtest Tracker | TCP |
 | 8888 | IT-Tools | TCP |
 | 9090 | Prometheus | TCP |
+| 9093 | Alertmanager | TCP |
 | 9100 | Node Exporter | TCP |
 | 9200 | Wazuh Indexer (OpenSearch) | TCP |
 | 9443 | Portainer (HTTPS) | TCP |

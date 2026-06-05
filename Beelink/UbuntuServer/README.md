@@ -64,14 +64,15 @@
 
 ---
 
-## Running Services (19 Containers)
+## Running Services (22 Containers)
 
 ### Monitoring Stack
 
 | Service | Port | Image | Description |
 |---|---|---|---|
 | **Prometheus** | `:9090` | `prom/prometheus` | Metrics collection and alerting engine |
-| **Grafana** | `:3001` | `grafana/grafana` | Dashboards — Node Exporter Full + Docker |
+| **Grafana** | `:3001` | `grafana/grafana` | Dashboards — Discord alerts provisioned (disk/cpu/ram) |
+| **Alertmanager** | `:9093` | `prom/alertmanager` | Prometheus alert routing → Discord with deduplication |
 | **cAdvisor** | `:8081` | `gcr.io/cadvisor/cadvisor` | Docker container resource metrics |
 | **Node Exporter** | `:9100` | `quay.io/prometheus/node-exporter` | Host-level OS metrics |
 | **Glances** | `:61208` | `nicolargo/glances:latest-full` | Real-time system resource overview |
@@ -94,7 +95,8 @@
 |---|---|---|---|
 | **Portainer** | `:9443` | `portainer/portainer-ce` | Docker management web UI (HTTPS) |
 | **Nginx Proxy Manager** | `:80/:443/:81` | `jc21/nginx-proxy-manager` | Reverse proxy with Let's Encrypt SSL |
-| **Dashy** | `:8080` | `lissy93/dashy` | Self-hosted dashboard / homepage |
+| **Homepage** | `:3005` | `ghcr.io/gethomepage/homepage` | Auto-discovering dashboard with live system widgets |
+| **Dashy** | `:8080` | `lissy93/dashy` | Legacy homepage dashboard |
 | **Filebrowser** | `:8585` | `filebrowser/filebrowser` | Web-based file manager |
 
 ### Application Stack
@@ -104,6 +106,7 @@
 | **Vaultwarden** | (via NPM) | `vaultwarden/server` | Self-hosted Bitwarden-compatible password manager |
 | **Samba** | `:139/:445` | `dperson/samba` | LAN file sharing (SMB protocol) |
 | **IT-Tools** | `:8888` | `corentinth/it-tools` | Developer utility toolbox (web UI) |
+| **Ntfy** | `:7777` | `binwiederhier/ntfy` | Self-hosted push notifications (mobile app support) |
 | **Watchtower** | — | `containrrr/watchtower` | Automatic Docker image updates (Sunday 4am) |
 | **MyLittleQuest** | `:3000` | `local-app` | Custom local application |
 
@@ -116,9 +119,11 @@
 
 | Service | Local URL | Notes |
 |---|---|---|
-| Dashy (Homepage) | `http://10.100.102.101:8080` | Start here |
+| Homepage | `http://10.100.102.101:3005` | Start here (auto-discovering) |
+| Dashy | `http://10.100.102.101:8080` | Legacy dashboard |
 | Grafana | `http://10.100.102.101:3001` | Monitoring dashboards |
 | Prometheus | `http://10.100.102.101:9090` | Metrics + alerts |
+| Alertmanager | `http://10.100.102.101:9093` | Alert routing status |
 | Wazuh Dashboard | `https://10.100.102.101:8443` | SIEM alerts |
 | Portainer | `https://10.100.102.101:9443` | Docker management |
 | Nginx Proxy Mgr | `http://10.100.102.101:81` | Proxy admin panel |
@@ -127,6 +132,7 @@
 | Vaultwarden | via NPM proxy | Password manager |
 | Filebrowser | `http://10.100.102.101:8585` | File management |
 | IT-Tools | `http://10.100.102.101:8888` | Dev tools |
+| Ntfy | `http://10.100.102.101:7777` | Push notifications |
 | Speedtest | `http://10.100.102.101:8765` | Speed history |
 | cAdvisor | `http://10.100.102.101:8081` | Container metrics |
 | MyLittleQuest | `http://10.100.102.101:3000` | Custom app |
@@ -138,9 +144,27 @@
 See [`automation.md`](./automation.md) for full details on:
 - Hourly syscheck with Discord alerting
 - Daily midnight report
-- Daily 2am Docker volume backup
+- Daily 2am Docker volume backup (Vaultwarden, Portainer, Prometheus, Grafana)
 - Weekly Docker cleanup (Sunday 3am)
 - Watchtower auto-update (Sunday 4am)
+- Grafana Discord alert rules (disk/CPU/RAM — provisioned, survives recreates)
+- Prometheus → Alertmanager → Discord pipeline
+
+---
+
+## Security
+
+See [`security.md`](./security.md) for full details on:
+- Fail2ban SSH jail + Discord ban/unban alerts
+- UFW firewall rules (Docker-compatible)
+- SSH hardening drop-in config
+- Wazuh SIEM agent registration
+- Tailscale remote access
+
+To apply all pending hardening:
+```bash
+sudo /home/admini/apply-security-hardening.sh
+```
 
 ---
 
@@ -185,4 +209,4 @@ Alert thresholds configured in `syscheck.sh`:
 
 ---
 
-*Last updated: 2026-06-05*
+*Last updated: 2026-06-05 — 22 containers, Alertmanager + Homepage + Ntfy added, Grafana Discord alerting provisioned*
