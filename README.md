@@ -14,7 +14,8 @@ Welcome to my Home Lab repository. This environment is a high-performance hybrid
 | Device | Role | Platform | Specs Highlights |
 | --- | --- | --- | --- |
 | **🚀 PLAYER 7** | **Primary Command Center** | Win 11 / WSL2 | **Ultra 5 245K \| RTX 5070 \| 32GB DDR5** |
-| **💻 Beelink** | Virtualization & SIEM | Proxmox | Wazuh, Metasploitable, JuiceShop, Kali and more services |
+| **💻 Beelink** | Virtualization Host | Proxmox | KVM host for UbuntuServer VM — Intel N150, 16GB RAM, 500GB SSD |
+| **🖥️ UbuntuServer** | Services & SIEM Node | Ubuntu 24.04 / KVM | 19 Docker services — Wazuh 4.14.2, Prometheus/Grafana, NPM, Vaultwarden |
 | **🥧 RPi 5** | Core Services | Debian / Docker | Nextcloud, Pi-hole, n8n, uptime-kuma |
 | **⌨️ RPi 500+** | Dev Environment | Linux Arm | Custom Aliases & CTF Tools |
 | **📱 Pixel 9a** | Hardened Mobile | GrapheneOS | Ghost account and Maya Golan Persona |
@@ -30,7 +31,8 @@ Welcome to my Home Lab repository. This environment is a high-performance hybrid
 * **[`gaming.md`](./Player7/gaming.md)**: High-refresh rate optimizations (180Hz) and gaming stack.
 
 ### 🛡️ Security & Pentesting
-* **[`/Beelink`](./Beelink)**: Wazuh SIEM (Discord alerts), Proxmox cluster (Kali, Metasploitable) and Bitwarden setup.
+* **[`/Beelink`](./Beelink)**: Proxmox virtualization host — hardware config and Proxmox setup.
+    * **[`/Beelink/UbuntuServer`](./Beelink/UbuntuServer)**: Primary services VM — Wazuh 4.14.2 SIEM, 19 Docker containers, full monitoring stack, Discord alerting, and Hermes AI audit skills.
 * **[`/Pixel 9a`](./Pixel%209a)**: GrapheneOS config & **Maya Golan** Sock Puppet documentation.
 * **[`/Flipper-Zero`](./Flipper-Zero)**: Unleashed firmware config and **BadUSB** payloads (Emergency-Lock, Stealth-Grab).
 
@@ -45,7 +47,7 @@ Welcome to my Home Lab repository. This environment is a high-performance hybrid
 ## 🚀 Key Workflows
 
 * **Command & Control**: The **PLAYER 7** acts as the central node for managing the Proxmox cluster and RPi services.
-* **SIEM Pipeline**: Wazuh Manager (Beelink) → `custom_n8n.py` → Discord Alerts.
+* **SIEM Pipeline**: Wazuh Manager (UbuntuServer) → Discord Alerts + Grafana dashboards.
 * **Vault Sync**: Real-time encrypted sync between **Pixel 9a**, **PLAYER 7**, and **RPi 5** via Syncthing.
 * **Identity Management**: Isolated OpSec protocols for the **Maya Golan** persona.
 * **GPU Cracking**: Offloading heavy cryptographic tasks to the **RTX 5070** via WSL2 CUDA passthrough.
